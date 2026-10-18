@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f3f2ef" id="theme-color">
+  <meta name="description" content="A private, local-first Markdown knowledge base. Your notes never leave this browser.">
+  <title>Knowledge Base</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="banner" class="banner" role="alert" hidden></div>
+
+  <div id="app">
+    <aside id="sidebar" aria-label="Notes navigation">
+      <div class="sidebar-head">
+        <h1 class="brand">Knowledge Base</h1>
+        <button id="btn-new-folder" class="icon-btn" type="button" title="New folder" aria-label="New folder"><span data-icon="folderPlus"></span></button>
+        <button id="btn-close-drawer" class="icon-btn only-mobile" type="button" title="Close navigation" aria-label="Close navigation"><span data-icon="close"></span></button>
+      </div>
+      <div class="search">
+        <span class="search-icon" data-icon="search" data-size="16"></span>
+        <input id="search" type="search" placeholder="Search notes  (Ctrl/Cmd+K)" aria-label="Search notes" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="tree" role="tree" aria-label="Folders and notes"></div>
+      <div id="search-results" class="results" hidden aria-label="Search results"></div>
+    </aside>
+    <div id="scrim" class="scrim" hidden></div>
+
+    <main id="main" tabindex="-1">
+      <header class="toolbar" role="toolbar" aria-label="Actions">
+        <button id="btn-menu" class="icon-btn only-mobile" type="button" aria-label="Open navigation" title="Open navigation"><span data-icon="menu"></span></button>
+        <button id="btn-new-note" class="btn primary" type="button" title="New note (Alt+N)"><span data-icon="plus"></span><span class="btn-label">New note</span></button>
+        <div class="tool-group" role="group" aria-label="Selected item">
+          <button id="btn-rename" class="btn ghost" type="button" title="Rename (F2)"><span data-icon="edit"></span><span class="btn-label">Rename</span></button>
+          <button id="btn-move" class="btn ghost" type="button" title="Move to another folder"><span data-icon="move"></span><span class="btn-label">Move</span></button>
+          <button id="btn-delete" class="btn ghost danger-text" type="button" title="Delete (Del)"><span data-icon="trash"></span><span class="btn-label">Delete</span></button>
+        </div>
+        <span class="spacer"></span>
+        <div id="view-toggle" class="segmented" role="group" aria-label="View mode">
+          <button type="button" data-view="edit" aria-pressed="false">Edit</button>
+          <button type="button" data-view="split" aria-pressed="true">Split</button>
+          <button type="button" data-view="preview" aria-pressed="false">Preview</button>
+        </div>
+        <div class="menu-wrap">
+          <button id="btn-more" class="btn ghost" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu" title="Import, export and settings"><span data-icon="more"></span><span class="btn-label">More</span></button>
+          <div id="more-menu" class="menu" role="menu" hidden>
+            <button role="menuitem" type="button" data-action="import-md"><span data-icon="upload"></span>Import Markdown file(s)…</button>
+            <button role="menuitem" type="button" data-action="import-zip"><span data-icon="upload"></span>Import ZIP archive…</button>
+            <hr>
+            <button role="menuitem" type="button" data-action="export-note"><span data-icon="download"></span>Export this note (.md)</button>
+            <button role="menuitem" type="button" data-action="export-zip"><span data-icon="download"></span>Export everything (ZIP)</button>
+            <hr>
+            <button role="menuitem" type="button" data-action="backup"><span data-icon="download"></span>Backup (JSON)</button>
+            <button role="menuitem" type="button" data-action="restore"><span data-icon="upload"></span>Restore backup (JSON)…</button>
+            <hr>
+            <button role="menuitem" type="button" data-action="install" hidden><span data-icon="download"></span>Install app</button>
+            <button role="menuitem" type="button" data-action="theme"><span data-icon="sun"></span><span id="theme-label">Theme: Auto</span></button>
+            <button role="menuitem" type="button" data-action="shortcuts"><span data-icon="keyboard"></span>Keyboard shortcuts</button>
+          </div>
+        </div>
+      </header>
+
+      <section id="folder-view" class="folder-view" aria-live="polite"></section>
+
+      <section id="editor" class="editor" data-view="split" hidden aria-label="Note editor">
+        <div class="editor-head">
+          <nav id="breadcrumb" class="breadcrumb" aria-label="Location"></nav>
+          <label class="sr-only" for="note-title">Note title</label>
+          <input id="note-title" class="title-input" type="text" placeholder="Untitled Note" maxlength="200" autocomplete="off">
+          <div class="meta">
+            <span id="note-modified"></span>
+            <span id="save-status" class="save-status" data-state="saved" role="status" aria-live="polite">All changes saved</span>
+          </div>
+        </div>
+        <div class="panes">
+          <label class="sr-only" for="note-content">Markdown content</label>
+          <textarea id="note-content" class="source" spellcheck="true" placeholder="Start writing in Markdown…"></textarea>
+          <article id="preview" class="preview" aria-label="Preview"></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <input id="file-md" type="file" accept=".md,.markdown,text/markdown,text/plain" multiple hidden>
+  <input id="file-zip" type="file" accept=".zip,application/zip" hidden>
+  <input id="file-json" type="file" accept=".json,application/json" hidden>
+
+  <noscript><p class="noscript">This app needs JavaScript. Everything runs locally in your browser.</p></noscript>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

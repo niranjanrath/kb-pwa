@@ -1,0 +1,27 @@
+{
+  "name": "local-markdown-kb",
+  "version": "1.0.0",
+  "description": "Local-first Markdown knowledge base PWA (vanilla JS, Dexie.js, no backend)",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "vendor": "node scripts/vendor.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "test": "node --test --test-reporter=spec \"tests/*.test.js\"",
+    "check": "npm test && node scripts/check.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "dexie": "^4.4.6",
+    "dompurify": "^3.4.17",
+    "highlight.js": "^11.12.0",
+    "jszip": "^3.10.2",
+    "marked": "^18.1.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.6",
+    "jsdom": "^29.1.1"
+  },
+  "private": true,
+  "type": "module"
+}
