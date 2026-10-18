@@ -42,13 +42,19 @@ async function init() {
   wireStaticEvents();
   registerServiceWorker();
 
+  // A stalled IndexedDB open (another tab blocking it, a slow phone) must never leave a silent blank screen.
+  const slowTimer = setTimeout(showSlowStart, 4000);
   try {
     db = createDatabase();
+    db.on('blocked', showSlowStart);
     await db.open();
   } catch (err) {
+    clearTimeout(slowTimer);
     storageFailed(err);
     return;
   }
+  clearTimeout(slowTimer);
+  $('banner').hidden = true;
 
   folders = createFolderService(db);
   notes = createNoteService(db);
@@ -97,8 +103,36 @@ async function init() {
   updateToolbar();
 }
 
+function showSlowStart() {
+  if (state.ready) return;
+  const view = $('folder-view');
+  if (view.hidden) return;
+  view.replaceChildren(
+    el('div', { class: 'empty' },
+      el('h2', {}, 'Still opening your notes…'),
+      el('p', {}, 'Browser storage is taking longer than usual. Close other tabs or windows of this app, then reload. Your notes are not lost.'),
+      el('button', { class: 'btn', type: 'button', onclick: () => location.reload() }, 'Reload')),
+  );
+}
+
+/** Last-resort handler: show a visible, actionable error instead of a blank screen. */
+function startupCrashed(err) {
+  console.error(err);
+  if (state.ready) return; // after startup, individual actions report their own errors
+  $('view-toggle').hidden = true;
+  $('editor').hidden = true;
+  $('folder-view').hidden = false;
+  $('folder-view').replaceChildren(
+    el('div', { class: 'empty' },
+      el('h2', {}, 'The app could not start'),
+      el('p', {}, describeError(err)),
+      el('button', { class: 'btn', type: 'button', onclick: () => location.reload() }, 'Reload')),
+  );
+}
+
 function storageFailed(err) {
   state.ready = false;
+  $('view-toggle').hidden = true;
   document.body.classList.add('no-storage');
   const banner = $('banner');
   banner.hidden = false;
@@ -377,7 +411,12 @@ function renderPreviewSoon() {
 }
 function renderPreviewNow() {
   clearTimeout(previewTimer);
-  renderMarkdownInto($('preview'), $('note-content').value);
+  const text = $('note-content').value;
+  if (!text.trim()) {
+    $('preview').replaceChildren(el('p', { class: 'preview-empty' }, 'Nothing to preview yet. Switch to Edit to start writing.'));
+    return;
+  }
+  renderMarkdownInto($('preview'), text);
 }
 
 function setSaveStatus(status, text) {
@@ -1034,4 +1073,6 @@ function wireStaticEvents() {
   syncDrawer();
 }
 
-init();
+window.addEventListener('error', (e) => startupCrashed(e.error || e.message));
+window.addEventListener('unhandledrejection', (e) => startupCrashed(e.reason));
+init().catch(startupCrashed);

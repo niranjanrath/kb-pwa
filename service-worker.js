@@ -4,7 +4,7 @@
 //   * navigations that miss the cache fall back to the cached index.html
 // Bump VERSION whenever any precached file changes so old caches are dropped.
 // (npm run check verifies that this list matches the files on disk.)
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = `kb-shell-${VERSION}`;
 
 const SHELL = [

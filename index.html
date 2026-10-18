@@ -44,7 +44,7 @@
           <button id="btn-delete" class="btn ghost danger-text" type="button" title="Delete (Del)"><span data-icon="trash"></span><span class="btn-label">Delete</span></button>
         </div>
         <span class="spacer"></span>
-        <div id="view-toggle" class="segmented" role="group" aria-label="View mode">
+        <div id="view-toggle" class="segmented" role="group" aria-label="View mode" hidden>
           <button type="button" data-view="edit" aria-pressed="false">Edit</button>
           <button type="button" data-view="split" aria-pressed="true">Split</button>
           <button type="button" data-view="preview" aria-pressed="false">Preview</button>
@@ -72,7 +72,7 @@
         </div>
       </header>
 
-      <section id="folder-view" class="folder-view" aria-live="polite"></section>
+      <section id="folder-view" class="folder-view" aria-live="polite"><p id="boot-msg" class="boot-msg" role="status">Opening your notes…</p></section>
 
       <section id="editor" class="editor" data-view="split" hidden aria-label="Note editor">
         <div class="editor-head">
