@@ -103,7 +103,7 @@ function storageFailed(err) {
   const banner = $('banner');
   banner.hidden = false;
   banner.textContent = `${describeError(err)} Your notes cannot be loaded or saved in this window. Try a regular (non-private) window, allow site data for this page, or free up disk space.`;
-  for (const id of ['btn-new-note', 'btn-new-folder', 'btn-rename', 'btn-move', 'btn-delete', 'search', 'btn-more']) $(id).disabled = true;
+  for (const id of ['btn-new-note', 'btn-new-folder', 'btn-rename', 'btn-move', 'btn-delete', 'search', 'btn-more', 'btn-search']) $(id).disabled = true;
   $('folder-view').hidden = false;
   $('folder-view').replaceChildren(
     el('div', { class: 'empty' }, el('h2', {}, 'Browser storage is unavailable'), el('p', {}, 'This app stores everything locally in IndexedDB, which could not be opened.')),
@@ -440,6 +440,8 @@ function onContentInput() {
 }
 
 function setView(view, { persist = true } = {}) {
+  // Phones have no room for side-by-side panes: show the editor instead, without overwriting the saved preference.
+  if (view === 'split' && mobileQuery.matches) { view = 'edit'; persist = false; }
   state.view = view;
   $('editor').dataset.view = view;
   for (const b of $('view-toggle').querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.view === view));
@@ -871,6 +873,7 @@ function syncDrawer() {
   $('sidebar').inert = mobileQuery.matches && !document.body.classList.contains('drawer-open');
 }
 mobileQuery.addEventListener?.('change', () => {
+  setView(store.get('kb.view', 'split'), { persist: false });
   if (!mobileQuery.matches) closeDrawer();
   syncDrawer();
 });
@@ -892,6 +895,9 @@ function updateToolbar() {
 
 async function handleMenuAction(action) {
   switch (action) {
+    case 'rename': return renameItem();
+    case 'move': return moveItem();
+    case 'delete': return deleteItem();
     case 'import-md': return $('file-md').click();
     case 'import-zip': return $('file-zip').click();
     case 'export-note': return exportCurrentNote();
@@ -930,6 +936,7 @@ function wireStaticEvents() {
   $('btn-move').addEventListener('click', () => moveItem());
   $('btn-delete').addEventListener('click', () => deleteItem());
   $('btn-menu').addEventListener('click', openDrawer);
+  $('btn-search').addEventListener('click', openDrawer);
   $('btn-close-drawer').addEventListener('click', closeDrawer);
   $('scrim').addEventListener('click', closeDrawer);
   $('note-title').addEventListener('input', onTitleInput);

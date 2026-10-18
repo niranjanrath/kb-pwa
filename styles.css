@@ -112,6 +112,7 @@ svg { flex: none; }
 .skip-link:focus { top: 8px; }
 .muted { color: var(--muted); font-size: 0.875em; }
 .only-mobile { display: none !important; }
+.mobile-item { display: none; }
 .noscript { padding: 2rem; }
 
 /* ---------- layout ---------- */
@@ -366,16 +367,35 @@ body.no-storage #app { padding-top: 52px; }
   }
   body.drawer-open #sidebar { transform: none; visibility: visible; transition: transform 0.2s ease; }
   .scrim { position: fixed; inset: 0; z-index: 35; background: rgba(10, 14, 18, 0.45); }
-  .toolbar { padding: 6px 8px; padding-top: calc(6px + env(safe-area-inset-top)); gap: 4px; }
-  .toolbar .btn-label { display: none; }
-  #btn-new-note .btn-label { display: inline; }
-  .toolbar .btn.ghost { padding: 5px 9px; }
+  /* One compact top bar: menu, search, view toggle, more. Note actions live in the More sheet. */
+  .toolbar { flex-wrap: nowrap; padding: 4px 8px; padding-top: calc(4px + env(safe-area-inset-top)); gap: 2px; }
+  .toolbar .btn-label, .tool-group { display: none; }
+  .toolbar .icon-btn, .toolbar .btn.ghost { width: 44px; height: 44px; min-height: 44px; padding: 0; }
+  .segmented button { min-height: 40px; padding: 4px 14px; }
+  #view-toggle [data-view='split'] { display: none; }
+  .mobile-item { display: flex; }
+  hr.mobile-item { display: block; }
+  /* New note becomes a thumb-reachable floating button; hidden while typing. */
+  #btn-new-note {
+    position: fixed; z-index: 30; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom));
+    width: 56px; height: 56px; min-height: 56px; padding: 0; border-radius: 50%;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  }
+  #btn-new-note svg { width: 24px; height: 24px; }
+  body:has(#note-content:focus) #btn-new-note, body:has(#note-title:focus) #btn-new-note, body.drawer-open #btn-new-note { display: none; }
+  .preview, .folder-view { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  /* Slimmer note header; breadcrumb and meta get out of the way while typing. */
+  .editor-head { padding: 6px 16px 6px; }
+  .breadcrumb { flex-wrap: nowrap; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.75rem; margin: 0; }
+  .meta { flex-wrap: nowrap; margin: 0; font-size: 0.75rem; white-space: nowrap; overflow: hidden; }
+  .editor:has(#note-content:focus) .breadcrumb { display: none; }
+  .source { font-size: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
   .row { min-height: 40px; }
   .twisty { width: 26px; height: 30px; }
   .panes { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
   .editor[data-view='edit'] .panes, .editor[data-view='preview'] .panes { grid-template-rows: minmax(0, 1fr); }
   .source { border-right: 0; border-bottom: 1px solid var(--border); }
-  .title-input { font-size: 1.3rem; }
+  .title-input { font-size: 1.2rem; }
   .menu { position: fixed; right: 8px; left: 8px; top: auto; bottom: calc(8px + env(safe-area-inset-bottom)); min-width: 0; }
   .menu button { padding: 12px 10px; }
   .toasts { bottom: calc(76px + env(safe-area-inset-bottom)); }

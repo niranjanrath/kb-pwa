@@ -36,6 +36,7 @@
     <main id="main" tabindex="-1">
       <header class="toolbar" role="toolbar" aria-label="Actions">
         <button id="btn-menu" class="icon-btn only-mobile" type="button" aria-label="Open navigation" title="Open navigation"><span data-icon="menu"></span></button>
+        <button id="btn-search" class="icon-btn only-mobile" type="button" aria-label="Search notes" title="Search notes"><span data-icon="search"></span></button>
         <button id="btn-new-note" class="btn primary" type="button" title="New note (Alt+N)"><span data-icon="plus"></span><span class="btn-label">New note</span></button>
         <div class="tool-group" role="group" aria-label="Selected item">
           <button id="btn-rename" class="btn ghost" type="button" title="Rename (F2)"><span data-icon="edit"></span><span class="btn-label">Rename</span></button>
@@ -51,6 +52,10 @@
         <div class="menu-wrap">
           <button id="btn-more" class="btn ghost" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu" title="Import, export and settings"><span data-icon="more"></span><span class="btn-label">More</span></button>
           <div id="more-menu" class="menu" role="menu" hidden>
+            <button role="menuitem" type="button" class="mobile-item" data-action="rename"><span data-icon="edit"></span>Rename…</button>
+            <button role="menuitem" type="button" class="mobile-item" data-action="move"><span data-icon="move"></span>Move…</button>
+            <button role="menuitem" type="button" class="mobile-item danger-text" data-action="delete"><span data-icon="trash"></span>Delete…</button>
+            <hr class="mobile-item">
             <button role="menuitem" type="button" data-action="import-md"><span data-icon="upload"></span>Import Markdown file(s)…</button>
             <button role="menuitem" type="button" data-action="import-zip"><span data-icon="upload"></span>Import ZIP archive…</button>
             <hr>
